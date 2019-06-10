@@ -1,14 +1,13 @@
 #from lib.users import Users
-import json
+#import json
 from boto import kinesis
 
 import cv2
 import numpy as np
-import socket
 import sys
 import pickle as cPickle
-import struct
-from multiprocessing import Pool
+#import struct
+#from multiprocessing import Pool
 import pytz ## for timezone calculations
 import datetime
 
@@ -20,7 +19,7 @@ cap=cv2.VideoCapture(0)
 kinesis = kinesis.connect_to_region(aws_region)
 
 camera_index = 0 # 0 is usually the built-in webcam
-capture_rate = 30 # Frame capture rate.. every X frames. Positive integer.
+capture_rate = 2 # Frame capture rate.. every X frames. Positive integer.
 rekog_max_labels = 123
 rekog_min_conf = 50.0
 frame_count = 0
@@ -64,7 +63,7 @@ def encode_and_send_frame(frame, frame_count, enable_kinesis=True, enable_rekog=
             print("....Sending image to Kinesis")
             response = kinesis.put_record(
             	stream_name = stream_name,  # StreamName in boto3
-            	data=cPickle.dumps(frame_package), # Data in boto3
+            	data = cPickle.dumps(frame_package, 0), # Data in boto3
             	partition_key="partitionkey" # PartitionKey in boto3
             	)
             print('Response: \n', response)
@@ -90,7 +89,7 @@ while True:
         if frame_count % capture_rate == 0:
         	#result = pool.apply_async(encode_and_send_frame(frame, frame_count, enable_kinesis=True, enable_rekog=False, write_file=False))
         	result = encode_and_send_frame(frame, frame_count, enable_kinesis=True, enable_rekog=False, write_file=False)
-        	print('...sending 1/30 frames to AWS')
+        	print('...sending 1/{a:5d} frames to AWS'.format(a = capture_rate))
 
         frame_count += 1
 
