@@ -12,6 +12,7 @@ kinesis = boto3.client('kinesis', region_name = aws_region) # with boto3
 stream_name = "TestStream"
 
 while True:
+    time.sleep(1/10)
     try: 
         response = kinesis.describe_stream(StreamName = stream_name)
         if response['StreamDescription']['StreamStatus'] == 'ACTIVE':
@@ -41,8 +42,7 @@ while True:
                     break
                     
     except Exception as e:
-        print('... error while trying to describe kinesis stream : %s')
-        print(e)
+        print('... error while trying to describe kinesis stream : ', e)
 
     
 
